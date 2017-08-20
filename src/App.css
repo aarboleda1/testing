@@ -1,0 +1,81 @@
+h4 {
+    margin: 0;
+    color: white;
+}
+
+.app-container {
+    /* min-height: 100vh; */
+    height: 100%;
+    width: 100%;
+}
+
+.fa-main-container {
+    position: absolute;
+    margin-left: 44px;
+    border: 1px solid black;
+    width: calc(100% - 44px);
+    height: calc(100% - 65px);
+}
+
+.fa-tabs-container {
+    position: relative;
+}
+
+.fa-header {
+    height: 65px;
+    /* background-image: -webkit-linear-gradient(108deg, #70d0ee, #2a84d2 90%); */
+    top: 0;
+    width: 100%;
+    padding-top: 0px;
+    text-align: center;
+    background-color: #68768A;
+}
+
+.fa-sidebar-container {
+    float: left;
+    width: 44px;
+    background-color: #5D5A58;
+    height: 100vh;
+}
+
+
+/*Components*/
+
+
+/* .fa-top-5-container-list-container{} */
+
+.fa-panel {
+    display: flex;
+}
+
+.fa-dashboard-container {
+    display: flex;
+    position: relative;
+    height: calc(100% - 35px);
+}
+
+.jumbotron {
+    text-align: center;
+    width: 70%;
+}
+
+.fa-top-5-container-list {
+    display: flex;
+    position: relative;
+    width: 70%;
+    justify-content: space-around;
+    height: 100%;
+    overflow: scroll;
+}
+
+.fa-top-5-list {
+    position: relative;
+}
+
+.fa-company-card {
+    height: 150px;
+    width: 150px;
+    background-color: white;
+    border-radius: 2px;
+    cursor: pointer;
+}
