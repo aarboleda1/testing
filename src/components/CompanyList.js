@@ -7,22 +7,25 @@ export default class CompanyList extends Component {
 	renderMostActiveUsers = (users, company) => {
 		let month = this.props.selectedMonth
 		let sortedUsers = Object.keys(users).sort((a, b) => {
-			return users[b].emailsSentLastNMonths[month] - users[a].emailsSentLastNMonths[month]
-		})
-		return sortedUsers.map((user) => {
+			return users[b].emailsSentLastNMonths[month] - users[a].emailsSentLastNMonths[month];
+		});
+		let numEmployees = sortedUsers.length;
+		let inActiveUsers = [];
+		sortedUsers = sortedUsers.map((user) => {
 			if (users[user].emailsSentLastNMonths[month] === 0) {
-				let monthsInActive = [];
-				// company.numberOfInActives = company.numberOfInActives ? company.numberOfInActives[month] += 1 : company.numberOfInActives[month] = 1;
+				inActiveUsers.push(user)
 			}
 			return (
 				<p key={user}>
-					<tr>
-						{user}
-						{users[user].emailsSentLastNMonths[month]}						
-					</tr>
+					{user}
+					{/*{users[user].emailsSentLastNMonths[month]}*/}
 				</p>
 			)
 		})
+		let percentInactive =  Math.round(inActiveUsers.length / numEmployees * 100);
+		company.percentInactive = percentInactive;
+		return sortedUsers;
+		
 	}
 	renderCompanies = () => {
 		return(
@@ -34,7 +37,9 @@ export default class CompanyList extends Component {
 						<td>
 							{this.renderMostActiveUsers(company.users, company)}
 						</td>
-						<td>@mdo</td>
+						<td>
+							<strong>{company.percentInactive + '%'}</strong>
+						</td>
 					</tr>
 				)
 			})
@@ -61,8 +66,13 @@ export default class CompanyList extends Component {
 					</div>
 					<div className="fa-monthly-data-container">
 						<ListGroup>
-							<ListGroupItem header="Heading 1">Total Conversations this Month <br/>{totalConversationsPerMonth[selectedMonth]}</ListGroupItem>
-							<ListGroupItem header="Heading 3" bsStyle="danger">Danger styling</ListGroupItem>
+							<ListGroupItem header="Heading 1">
+								<strong> Total Conversations this Month </strong>
+								<br/>{totalConversationsPerMonth[selectedMonth]}
+							</ListGroupItem>
+							<ListGroupItem header="Heading 3">
+								<strong>Top 5 pairs of work buddies</strong>
+							</ListGroupItem>
 						</ListGroup>
 					</div>
 			</div>

@@ -1,12 +1,12 @@
 const conversations = require('./conversations.json');
-export 
-const appData = {
-	sortedCompaniesByMonth: new Array(12).fill(0),
+export const appData = {
+	sortedCompaniesByMonth: new Array(12).fill([]),
 	totalConversationsPerMonth: new Array(14).fill(0),
 } 
 const data = {}; // data for processing
 const companies = {};
 const userMap = {};
+
 //configuration
 for (let i = 0; i < conversations.companies.length; i++){
 	let company = conversations.companies[i];
@@ -33,6 +33,7 @@ const incrementAllSubsequentMonths = (month, company_id) => {
 		data[company_id].activityOfLastNMonths[i]++;
 	}
 }
+
 const incrementMonthlyActivityForCompany = (timeSent, company_id) => {
 		if (timeSent > monthsAgo(1)) { // delete months 1 - 5? no data
 			data[company_id].activityPerNMonth[1]++; 
@@ -90,6 +91,7 @@ const createDataStore = () => {
 			company_name: company.name,
 			activityPerNMonth: new Array(14).fill(0),
 			activityOfLastNMonths: new Array(14).fill(0),
+			inActivityOfLastNMonths: new Array(14).fill(0),				
 			activeUsers: 0,		
 			totalUsers: 0,	
 		};
@@ -132,12 +134,27 @@ const topCompaniesSortedByLastNMonths = (n) => {
 
 const calculateTopCompanies = () => {
 	for (let month = 5; month < 13; month++) {
-		appData.sortedCompaniesByMonth[month] = topCompaniesSortedByLastNMonths(month);
+		appData.sortedCompaniesByMonth[month] = topCompaniesSortedByLastNMonths(month); // array
 	}
 };
 calculateTopCompanies();
-// console.log(data, 'is data!')
 
+const calculatePercentInActiveUsers = () => {
+	// console.log(appData)
+	appData.sortedCompaniesByMonth.forEach((month, index) => { // month has many copmanies, sorted
+		// console.log(index, 'is the index')
+		month.forEach((company) => {
+			// console.log(company.users, 'is company')
+			// console.log(Array.isArray(company.users));
+			// console.log(company.users)
+			for (let user in company.users) {
+				// console.log(company.users[user])
+				// .emailsSentLastNMonths[]
+			}
+		})
+	})
+}
+calculatePercentInActiveUsers();
 //get total number of employers per copmany
 for (let i = 0; i < conversations.users.length; i++) {
 	let user = conversations.users[i];	
