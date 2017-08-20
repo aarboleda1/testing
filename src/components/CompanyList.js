@@ -1,22 +1,38 @@
 import React, { Component } from 'react';
-import { Table, Button, Jumbotron, ListGroup, ListGroupItem } from 'react-bootstrap';
-export default class CompanyList extends Component {	
+import { Table, ListGroup, ListGroupItem } from 'react-bootstrap';
+export default class CompanyList extends Component {
 	constructor(props) {
-		super(props)
+		super(props);
+	}	
+	renderMostActiveUsers = (users, company) => {
+		let month = this.props.selectedMonth
+		let sortedUsers = Object.keys(users).sort((a, b) => {
+			return users[b].emailsSentLastNMonths[month] - users[a].emailsSentLastNMonths[month]
+		})
+		return sortedUsers.map((user) => {
+			if (users[user].emailsSentLastNMonths[month] === 0) {
+				let monthsInActive = [];
+				// company.numberOfInActives = company.numberOfInActives ? company.numberOfInActives[month] += 1 : company.numberOfInActives[month] = 1;
+			}
+			return (
+				<p key={user}>
+					<tr>
+						{user}
+						{users[user].emailsSentLastNMonths[month]}						
+					</tr>
+				</p>
+			)
+		})
 	}
 	renderCompanies = () => {
 		return(
 			this.props.lastNumberOfMonths.map((company, index) => {
 				return (
-					<tr key={company}>
+					<tr key={company.company_name}>
 						<td>{index + 1}</td>
-						<td>{company}</td>
+						<td>{company.company_name}</td>
 						<td>
-							{'hello'}<br/>
-							{'hello'}<br/>
-							{'hello'}<br/>
-							{'hello'}<br/>
-							{'hello'}<br/>
+							{this.renderMostActiveUsers(company.users, company)}
 						</td>
 						<td>@mdo</td>
 					</tr>
@@ -25,7 +41,7 @@ export default class CompanyList extends Component {
 		)
 	}
 	render() {
-		const {} = this.props;
+		const {selectedMonth, totalConversationsPerMonth} = this.props;
 		return(
 			<div className="fa-dashboard-container">
 					<div className="fa-top-5-container-list">
@@ -45,7 +61,7 @@ export default class CompanyList extends Component {
 					</div>
 					<div className="fa-monthly-data-container">
 						<ListGroup>
-							<ListGroupItem header="Heading 1">Total Conversations</ListGroupItem>
+							<ListGroupItem header="Heading 1">Total Conversations this Month <br/>{totalConversationsPerMonth[selectedMonth]}</ListGroupItem>
 							<ListGroupItem header="Heading 3" bsStyle="danger">Danger styling</ListGroupItem>
 						</ListGroup>
 					</div>

@@ -9,7 +9,7 @@ const ButtonDropDown = (props) => {
 	}
 	return (
 		<ButtonGroup>
-			<DropdownButton onSelect={(lastNumberOfMonths) => props.onSelectMonth(lastNumberOfMonths)}title="By Previous Months" id="bg-nested-dropdown">
+			<DropdownButton onSelect={(lastNumberOfMonths) => props.onSelectMonth(lastNumberOfMonths)} title={`Last ${props.selectedMonth} Months`} id="bg-nested-dropdown">
 				{renderButtonChoices()}
 			</DropdownButton>
 		</ButtonGroup>	

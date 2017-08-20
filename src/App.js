@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup, Dropdown, DropdownButton, MenuItem, PageHeader, Jumbotron } from 'react-bootstrap';
-import Tabs from './components/Tabs';
-import logo from './logo.svg';
 import CompanyList from './components/CompanyList';
 import ButtonDropDown from './components/ButtonDropDown';
-import './analyzeData';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			currentMonth: props.data.appData.sortedCompaniesByMonth[5]
+			currentMonth: props.data.appData.sortedCompaniesByMonth[5],		
+			selectedMonth: 5,	
 		}
 		this.monthMapper = {
 			5: props.data.appData.topFiveInLastFiveMonths,
@@ -25,14 +22,16 @@ class App extends Component {
 	}
 	onSelectMonth = (lastNumberOfMonths) => {
 		this.setState({
-			currentMonth: this.props.data.appData.sortedCompaniesByMonth[lastNumberOfMonths]
+			currentMonth: this.props.data.appData.sortedCompaniesByMonth[lastNumberOfMonths],
+			selectedMonth: lastNumberOfMonths,
 		})
 	}
 	componentDidMount = () => {
 		console.log(this.props)
 	}
   render() {
-		const {data} = this.props
+		const {data} = this.props;
+		const {currentMonth, selectedMonth}= this.state;
     return (
       <div className="app-container">
 				<div className="fa-sidebar-container"/>
@@ -42,9 +41,12 @@ class App extends Component {
 				<div className="fa-main-container">
 					<ButtonDropDown
 						onSelectMonth={this.onSelectMonth}
+						selectedMonth={this.state.selectedMonth}
 					/>
 					<CompanyList
-						lastNumberOfMonths={this.state.currentMonth}
+						lastNumberOfMonths={currentMonth}
+						selectedMonth={selectedMonth}
+						totalConversationsPerMonth={data.appData.totalConversationsPerMonth}
 					/>									
 				</div>
 

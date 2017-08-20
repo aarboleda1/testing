@@ -2,6 +2,7 @@ const conversations = require('./conversations.json');
 export 
 const appData = {
 	sortedCompaniesByMonth: new Array(12).fill(0),
+	totalConversationsPerMonth: new Array(14).fill(0),
 } 
 const data = {}; // data for processing
 const companies = {};
@@ -38,29 +39,46 @@ const incrementMonthlyActivityForCompany = (timeSent, company_id) => {
 		} else if (timeSent < monthsAgo(1) & timeSent > monthsAgo(2)) {
 		} else if (timeSent < monthsAgo(2) & timeSent > monthsAgo(3)) {
 		} else if (timeSent < monthsAgo(3) & timeSent > monthsAgo(4)) {
-		} else if (timeSent < monthsAgo(4) & timeSent > monthsAgo(5)) {
-			incrementAllSubsequentMonths(5, company_id);	
+		} else if (timeSent > monthsAgo(5)) {
+			incrementAllSubsequentMonths(5, company_id);
+			data[company_id].activityPerNMonth[5]++;			
+			appData.totalConversationsPerMonth[5]++;							
+			return 5;	
 		} else if (timeSent < monthsAgo(5) & timeSent > monthsAgo(6)) {
 			incrementAllSubsequentMonths(6, company_id)
-			data[company_id].activityPerNMonth[6]++;				
+			data[company_id].activityPerNMonth[6]++;
+			appData.totalConversationsPerMonth[6]++;				
+			return 6;	
 		} else if (timeSent < monthsAgo(6) & timeSent > monthsAgo(7)) {
-			incrementAllSubsequentMonths(7, company_id)
+			incrementAllSubsequentMonths(7, company_id);
 			data[company_id].activityPerNMonth[7]++;
+			appData.totalConversationsPerMonth[7]++;
+			return 7;				
 		} else if (timeSent < monthsAgo(7) & timeSent > monthsAgo(8)) {
 			incrementAllSubsequentMonths(8, company_id)
-			data[company_id].activityPerNMonth[8]++;											
+			data[company_id].activityPerNMonth[8]++;
+			appData.totalConversationsPerMonth[8]++;				
+			return 8;				
 		} else if (timeSent < monthsAgo(8) & timeSent > monthsAgo(9)) {
 			incrementAllSubsequentMonths(9, company_id)
-			data[company_id].activityPerNMonth[9]++;													
+			data[company_id].activityPerNMonth[9]++;
+			appData.totalConversationsPerMonth[9]++;													
+			return 9;				
 		} else if (timeSent < monthsAgo(9) & timeSent > monthsAgo(10)) {
 			incrementAllSubsequentMonths(10, company_id)
-			data[company_id].activityPerNMonth[10]++;																	
+			data[company_id].activityPerNMonth[10]++;
+			appData.totalConversationsPerMonth[10]++;																	
+			return 10;				
 		} else if (timeSent < monthsAgo(10) & timeSent > monthsAgo(11)) {
 			incrementAllSubsequentMonths(11, company_id)
-			data[company_id].activityPerNMonth[11]++;																	
+			data[company_id].activityPerNMonth[11]++;
+			appData.totalConversationsPerMonth[11]++;																	
+			return 11;				
 		} else if (timeSent < monthsAgo(11) & timeSent > monthsAgo(12)) {
 			incrementAllSubsequentMonths(12, company_id)
-			data[company_id].activityPerNMonth[12]++;																
+			data[company_id].activityPerNMonth[12]++;
+			appData.totalConversationsPerMonth[12]++;	
+			return 12;															
 		}
 }
 const createDataStore = () => {
@@ -70,9 +88,10 @@ const createDataStore = () => {
 		data[company.id] = {
 			users: {},
 			company_name: company.name,
-			activityPerNMonth: new Array(12).fill(0),
-			activityOfLastNMonths: new Array(12).fill(0),
-			activeUsers: 0,			
+			activityPerNMonth: new Array(14).fill(0),
+			activityOfLastNMonths: new Array(14).fill(0),
+			activeUsers: 0,		
+			totalUsers: 0,	
 		};
 	}
 	for (let j = 0; j < conversations.conversations.length; j++) {
@@ -81,23 +100,46 @@ const createDataStore = () => {
 		let timeSent = conversation.date;
 		const company_id = userMap[fromUser].company_id;
 		let fullName = userMap[fromUser].name.first + ' ' + userMap[fromUser].name.last;
-		data[company_id].users[fullName] = data[company_id].users[fullName] ? data[company_id].users[fullName] += 1 : 1;
-		incrementMonthlyActivityForCompany(timeSent, company_id)		
+		let whichMonth = incrementMonthlyActivityForCompany(timeSent, company_id);		
+
+		if (!data[company_id].users[fullName]) {
+			data[company_id].users[fullName] = {
+				totalNumberSent: 1,
+				emailsSentByMonth: new Array(14).fill(0),
+				emailsSentLastNMonths: new Array(14).fill(0),
+			};
+		} else {
+			data[company_id].users[fullName].totalNumberSent += 1;
+			data[company_id].users[fullName].emailsSentByMonth[whichMonth] += 1;
+			for (let i = whichMonth; i < data[company_id].users[fullName].emailsSentLastNMonths.length; i++) {
+				data[company_id].users[fullName].emailsSentLastNMonths[i] += 1;
+			}
+		}
 	}	
 }
 
 createDataStore();
 
 const topCompaniesSortedByLastNMonths = (n) => {
-	return Object.keys(data).sort((a,b)=> {
-		return data[a].activityOfLastNMonths[n] - data[b].activityOfLastNMonths[n];
-	}).map((id) => companies[id]);
+	let sortable = [];
+	for (var key in data) {
+    sortable.push(data[key]);
+	}
+	return sortable.sort((companyA, companyB) => {
+		return companyA.activityOfLastNMonths[n] -  companyB.activityOfLastNMonths[n]
+	})
 }
 
 const calculateTopCompanies = () => {
-	for (let i = 5; i < 13; i++) {
-		appData.sortedCompaniesByMonth[i] = topCompaniesSortedByLastNMonths(i);
+	for (let month = 5; month < 13; month++) {
+		appData.sortedCompaniesByMonth[month] = topCompaniesSortedByLastNMonths(month);
 	}
 };
 calculateTopCompanies();
-console.log(data)
+// console.log(data, 'is data!')
+
+//get total number of employers per copmany
+for (let i = 0; i < conversations.users.length; i++) {
+	let user = conversations.users[i];	
+	data[user.company_id].totalUsers += 1;
+}
