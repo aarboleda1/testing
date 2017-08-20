@@ -1,22 +1,24 @@
 const conversations = require('./conversations.json');
+export 
 const appData = {
 	sortedCompaniesByMonth: new Array(12).fill(0),
-}
-// export const appData = {
-	// sortedCompaniesByMonth: new Array(12).fill(0),
-// } 
+} 
 const data = {}; // data for processing
 const companies = {};
-const users = {};
+const userMap = {};
 //configuration
 for (let i = 0; i < conversations.companies.length; i++){
 	let company = conversations.companies[i];
 	companies[company.id] = company.name
 }
-
+/*
+	when? 
+	1: is what months
+	2: what company
+*/
 for (let i = 0; i < conversations.users.length; i++) {
 	let user = conversations.users[i];
-	users[user.email] = {
+	userMap[user.email] = {
 		company_id: user.company_id,
 		name: user.name
 	}
@@ -27,7 +29,7 @@ const monthsAgo = (n) => {
 }
 const incrementAllSubsequentMonths = (month, company_id) => {
 	for (let i = month; i < data[company_id].activityOfLastNMonths.length; i++) {
-		data[company_id].activityOfLastNMonths[i]++
+		data[company_id].activityOfLastNMonths[i]++;
 	}
 }
 const incrementMonthlyActivityForCompany = (timeSent, company_id) => {
@@ -77,7 +79,9 @@ const createDataStore = () => {
 		let conversation = conversations.conversations[j];			
 		let fromUser = conversation.from; // only gets from user, probably needs to user to increment also
 		let timeSent = conversation.date;
-		const company_id = users[fromUser].company_id;
+		const company_id = userMap[fromUser].company_id;
+		let fullName = userMap[fromUser].name.first + ' ' + userMap[fromUser].name.last;
+		data[company_id].users[fullName] = data[company_id].users[fullName] ? data[company_id].users[fullName] += 1 : 1;
 		incrementMonthlyActivityForCompany(timeSent, company_id)		
 	}	
 }
@@ -96,4 +100,4 @@ const calculateTopCompanies = () => {
 	}
 };
 calculateTopCompanies();
-
+console.log(data)

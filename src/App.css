@@ -12,9 +12,10 @@ h4 {
 .fa-main-container {
     position: absolute;
     margin-left: 44px;
+    padding: 10px;
     border: 1px solid black;
     width: calc(100% - 44px);
-    height: calc(100% - 65px);
+    height: calc(100% - 40px);
 }
 
 .fa-tabs-container {
@@ -22,12 +23,12 @@ h4 {
 }
 
 .fa-header {
-    height: 65px;
+    height: 40px;
     /* background-image: -webkit-linear-gradient(108deg, #70d0ee, #2a84d2 90%); */
     top: 0;
     width: 100%;
     padding-top: 0px;
-    text-align: center;
+    text-align: left;
     background-color: #68768A;
 }
 
@@ -46,6 +47,11 @@ h4 {
 
 .fa-panel {
     display: flex;
+}
+
+.fa-monthly-data-container {
+    width: 30%;
+    margin: 0 10px;
 }
 
 .fa-dashboard-container {

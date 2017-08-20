@@ -43,7 +43,7 @@ export default class CompanyList extends Component {
 							</tbody>
 							</Table>					
 					</div>
-					<div className="fa-global-data">
+					<div className="fa-monthly-data-container">
 						<ListGroup>
 							<ListGroupItem header="Heading 1">Total Conversations</ListGroupItem>
 							<ListGroupItem header="Heading 3" bsStyle="danger">Danger styling</ListGroupItem>
