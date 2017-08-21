@@ -9,3 +9,9 @@ You are part of a frontend engineering team at Front tasked with building an ana
 Your data team has made available a JSON API endpoint that returns data as in conversations.json.
 
 You can either have your frontend app use the JSON file directly, or return it through a node server.
+
+TODO
+- [ ] cleanup code. CompanyList.js should really be - dashboard
+- [ ] write some tests
+- [ ] cleanup the code in analyzeData
+- [ ] get data in express web server
