@@ -20,7 +20,6 @@ class App extends Component {
 			selectedMonth: lastNumberOfMonths,
 		})
 	}
-
 	componentDidMount = () => {
 		const context = this;		
 		axios.get('http://localhost:8080/')

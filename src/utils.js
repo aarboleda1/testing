@@ -1,8 +1,9 @@
 /*
-	appData: Used to display calculations and be send to the UI
-	data: This object is strictly used for calculations throught
+	appData: Used to display calculations and be sent to the UI
+	data: This object is strictly used for calculations. 
 	userMap: I created this in order find user information by email. 
 		This isn't very necessary so I would probably refactor if given more time		
+	Ideally, I would have a single for the calculations to save space complexity.	
 */
 const appData = {
 	sortedCompaniesByMonth: new Array(12).fill([]),
@@ -14,9 +15,20 @@ const data = {}, companies = {}, userMap = {};
 /*
 	This function is used in componentDidMount. When the data/json file is 
 	received from the Node server, I pass the conversations through this 
-	function in order to calculate all the data necessary. 
+	function in order to calculate data displayed in the UI. 
 */
 export const createDataStore = (conversations) => {
+	fillLocalDataWithCompanyProfile(conversations, data)
+	createUserMap(conversations);
+	calculateTopCompanies();
+	calculateConversationsPerCompany(conversations)	
+	const emailGraph = createGraph(conversations);
+	const topWorkBuddies = calculateTopWorkBuddies(emailGraph);
+	appData.topWorkBuddies = topWorkBuddies;
+	return appData;
+}
+
+const fillLocalDataWithCompanyProfile = (conversations) => {
 	let company;
 	for (let i = 0; i < conversations.companies.length; i++) {
 		company = conversations.companies[i];
@@ -31,9 +43,14 @@ export const createDataStore = (conversations) => {
 			totalUsers: 0,	
 		};
 	}
-	createUserMap(conversations);
-	calculateTopCompanies();
+}
+/*
+	Given the month that an email was sent from,
+	This function finds out what company it came from and increments 
+	that companys email count
 
+*/
+const calculateConversationsPerCompany = (conversations) => {
 	for (let j = 0; j < conversations.conversations.length; j++) {
 		let conversation = conversations.conversations[j];			
 		let fromUser = conversation.from; // only gets from user, probably needs to user to increment also
@@ -56,12 +73,9 @@ export const createDataStore = (conversations) => {
 				data[company_id].users[fullName].emailsSentLastNMonths[i] += 1;
 			}
 		}
-	}	
-	const emailGraph = createGraph(conversations);
-	const topWorkBuddies = calculateTopWorkBuddies(emailGraph);
-	appData.topWorkBuddies = topWorkBuddies;
-	return appData;
+	}
 }
+
 
 const topCompaniesSortedByLastNMonths = (n) => {
 	let sortable = [];
@@ -72,6 +86,7 @@ const topCompaniesSortedByLastNMonths = (n) => {
 		return companyB.activityOfLastNMonths[n] -  companyA.activityOfLastNMonths[n]
 	})
 }
+
 const calculateTopCompanies = () => {
 	for (let month = 5; month < 13; month++) {
 		appData.sortedCompaniesByMonth[month] = topCompaniesSortedByLastNMonths(month); // array
@@ -92,9 +107,9 @@ const monthsAgo = (n) => {
 }
 
 /*
-	This function is used in order to calculating last N months
 	If a user sent an email in 2 months ago, then, that email should
 	also be included when accountint for emails in the last 10 months.
+	This function increments the current month, and then any subsequent month
 */
 const incrementAllSubsequentMonths = (month, company_id) => {
 	for (let i = month; i < data[company_id].activityOfLastNMonths.length; i++) {

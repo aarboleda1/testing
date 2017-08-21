@@ -1,6 +1,7 @@
 import React from 'react';
 import { ButtonGroup, DropdownButton, MenuItem } from 'react-bootstrap';
 const months = [5, 6, 7, 8, 9, 10];
+
 const ButtonDropDown = (props) => {
 	const renderButtonChoices = () => {
 		return months.map((month) => {

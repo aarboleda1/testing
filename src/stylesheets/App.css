@@ -4,9 +4,12 @@
 }
 
 .app-container {
-    /* min-height: 100vh; */
     height: 100%;
     width: 100%;
+}
+
+.fa-top-5 {
+    background-color: #D3D3D3 !important;
 }
 
 .fa-main-container {
@@ -19,7 +22,6 @@
 
 .fa-name-container {
     display: flex;
-    /* justify-content: space-between; */
 }
 
 .fa-tabs-container {
@@ -28,10 +30,9 @@
 
 .fa-header {
     height: 40px;
-    /* background-image: -webkit-linear-gradient(108deg, #70d0ee, #2a84d2 90%); */
     top: 0;
     width: 100%;
-    padding-top: 0px;
+    padding-top: 20px;
     text-align: left;
     background-color: #68768A;
 }
@@ -49,9 +50,6 @@
 .fa-number {
     margin-right: 10px;
 }
-
-
-/* .fa-top-5-container-list-container{} */
 
 .fa-panel {
     display: flex;
@@ -77,7 +75,6 @@
     display: flex;
     position: relative;
     width: 55%;
-    /* justify-content: space-around; */
     height: 100%;
     overflow: scroll;
 }

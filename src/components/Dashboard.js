@@ -22,7 +22,7 @@ export default class Dashboard extends Component {
 							</small>
 						</strong>
 					<br/>
-					<i><small>{users[user].emailsSentLastNMonths[month]}{' emails sent'}</small></i>
+					<i><small>{users[user].emailsSentLastNMonths[month]}{' emails sent this month'}</small></i>
 				</p>
 			)
 		}).slice(0, 5);
@@ -34,7 +34,7 @@ export default class Dashboard extends Component {
 		return(
 			this.props.lastNumberOfMonths.map((company, index) => {
 				return (
-					<tr key={company.company_name}>
+					<tr className={index < 5 ? 'fa-top-5' : null}key={company.company_name}>
 						<td>{index + 1}</td>
 						<td>{company.company_name}</td>
 						<td>
