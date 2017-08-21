@@ -1,37 +1,108 @@
-const conversations = require('./conversations.json');
-export 
+/*
+	appData: Used to display calculations and be send to the UI
+	data: This object is strictly used for calculations throught
+	userMap: I created this in order find user information by email. 
+		This isn't very necessary so I would probably refactor if given more time		
+*/
 const appData = {
 	sortedCompaniesByMonth: new Array(12).fill([]),
 	totalConversationsPerMonth: new Array(14).fill(0),
+	topWorkBuddies: null,	
 } 
-const data = {}; // data for processing
-const companies = {};
-const userMap = {};
-//configuration
-for (let i = 0; i < conversations.companies.length; i++){
-	let company = conversations.companies[i];
-	companies[company.id] = company.name
+const data = {}, companies = {}, userMap = {};
+
+/*
+	This function is used in componentDidMount. When the data/json file is 
+	received from the Node server, I pass the conversations through this 
+	function in order to calculate all the data necessary. 
+*/
+export const createDataStore = (conversations) => {
+	let company;
+	for (let i = 0; i < conversations.companies.length; i++) {
+		company = conversations.companies[i];
+		companies[company.id] = company.name;
+		data[company.id] = {
+			users: {},
+			company_name: company.name,
+			activityPerNMonth: new Array(14).fill(0),
+			activityOfLastNMonths: new Array(14).fill(0),
+			inActivityOfLastNMonths: new Array(14).fill(0),				
+			activeUsers: 0,		
+			totalUsers: 0,	
+		};
+	}
+	createUserMap(conversations);
+	calculateTopCompanies();
+
+	for (let j = 0; j < conversations.conversations.length; j++) {
+		let conversation = conversations.conversations[j];			
+		let fromUser = conversation.from; // only gets from user, probably needs to user to increment also
+		let timeSent = conversation.date;
+		const company_id = userMap[fromUser].company_id;
+		let fullName = userMap[fromUser].name.first + ' ' + userMap[fromUser].name.last;
+		let whichMonth = incrementMonthlyActivityForCompany(timeSent, company_id);		
+
+		if (!data[company_id].users[fullName]) {
+			data[company_id].users[fullName] = {
+				totalNumberSent: 1,
+				emailsSentByMonth: new Array(14).fill(0),
+				emailsSentLastNMonths: new Array(14).fill(0),
+				email: conversation.from,
+			};
+		} else {
+			data[company_id].users[fullName].totalNumberSent += 1;
+			data[company_id].users[fullName].emailsSentByMonth[whichMonth] += 1;
+			for (let i = whichMonth; i < data[company_id].users[fullName].emailsSentLastNMonths.length; i++) {
+				data[company_id].users[fullName].emailsSentLastNMonths[i] += 1;
+			}
+		}
+	}	
+	const emailGraph = createGraph(conversations);
+	const topWorkBuddies = calculateTopWorkBuddies(emailGraph);
+	appData.topWorkBuddies = topWorkBuddies;
+	return appData;
 }
 
-for (let i = 0; i < conversations.users.length; i++) {
-	let user = conversations.users[i];
-	userMap[user.email] = {
-		company_id: user.company_id,
-		name: user.name
+const topCompaniesSortedByLastNMonths = (n) => {
+	let sortable = [];
+	for (var key in data) {
+    sortable.push(data[key]);
+	}
+	return sortable.sort((companyA, companyB) => {
+		return companyB.activityOfLastNMonths[n] -  companyA.activityOfLastNMonths[n]
+	})
+}
+const calculateTopCompanies = () => {
+	for (let month = 5; month < 13; month++) {
+		appData.sortedCompaniesByMonth[month] = topCompaniesSortedByLastNMonths(month); // array
+	}
+};
+const createUserMap = (conversations) => {
+	for (let i = 0; i < conversations.users.length; i++) {
+		let user = conversations.users[i];
+		userMap[user.email] = {
+			company_id: user.company_id,
+			name: user.name
+		}
 	}
 }
 const monthsAgo = (n) => {
 	const timeNow = Date.now();
 	return timeNow - (n * (2.682 * 1000000000));
 }
+
+/*
+	This function is used in order to calculating last N months
+	If a user sent an email in 2 months ago, then, that email should
+	also be included when accountint for emails in the last 10 months.
+*/
 const incrementAllSubsequentMonths = (month, company_id) => {
 	for (let i = month; i < data[company_id].activityOfLastNMonths.length; i++) {
 		data[company_id].activityOfLastNMonths[i]++;
 	}
 }
-
 const incrementMonthlyActivityForCompany = (timeSent, company_id) => {
-		if (timeSent > monthsAgo(1)) { // delete months 1 - 5? no data
+		if (timeSent > monthsAgo(1)) { 
 			data[company_id].activityPerNMonth[1]++; 
 		} else if (timeSent < monthsAgo(1) && timeSent > monthsAgo(2)) {
 		} else if (timeSent < monthsAgo(2) && timeSent > monthsAgo(3)) {
@@ -78,73 +149,18 @@ const incrementMonthlyActivityForCompany = (timeSent, company_id) => {
 			return 12;															
 		}
 }
-const createDataStore = () => {
-	let company;
-	for (let i = 0; i < conversations.companies.length; i++) {
-		company = conversations.companies[i];
-		data[company.id] = {
-			users: {},
-			company_name: company.name,
-			activityPerNMonth: new Array(14).fill(0),
-			activityOfLastNMonths: new Array(14).fill(0),
-			inActivityOfLastNMonths: new Array(14).fill(0),				
-			activeUsers: 0,		
-			totalUsers: 0,	
-		};
-	}
-	for (let j = 0; j < conversations.conversations.length; j++) {
-		let conversation = conversations.conversations[j];			
-		let fromUser = conversation.from; // only gets from user, probably needs to user to increment also
-		let timeSent = conversation.date;
-		const company_id = userMap[fromUser].company_id;
-		let fullName = userMap[fromUser].name.first + ' ' + userMap[fromUser].name.last;
-		let whichMonth = incrementMonthlyActivityForCompany(timeSent, company_id);		
-
-		if (!data[company_id].users[fullName]) {
-			data[company_id].users[fullName] = {
-				totalNumberSent: 1,
-				emailsSentByMonth: new Array(14).fill(0),
-				emailsSentLastNMonths: new Array(14).fill(0),
-			};
-		} else {
-			data[company_id].users[fullName].totalNumberSent += 1;
-			data[company_id].users[fullName].emailsSentByMonth[whichMonth] += 1;
-			for (let i = whichMonth; i < data[company_id].users[fullName].emailsSentLastNMonths.length; i++) {
-				data[company_id].users[fullName].emailsSentLastNMonths[i] += 1;
-			}
-		}
-	}	
-}
-
-createDataStore();
-
-const topCompaniesSortedByLastNMonths = (n) => {
-	let sortable = [];
-	for (var key in data) {
-    sortable.push(data[key]);
-	}
-	return sortable.sort((companyA, companyB) => {
-		return companyA.activityOfLastNMonths[n] -  companyB.activityOfLastNMonths[n]
-	})
-}
-
-const calculateTopCompanies = () => {
-	for (let month = 5; month < 13; month++) {
-		appData.sortedCompaniesByMonth[month] = topCompaniesSortedByLastNMonths(month); // array
-	}
-};
-calculateTopCompanies();
-
-for (let i = 0; i < conversations.users.length; i++) {
-	let user = conversations.users[i];	
-	data[user.company_id].totalUsers += 1;
-}
 
 
-const createGraph = () => {
+
+/*
+	These two functions are used to calculate the top relationships in the dataset
+	Currently, I only find the total top work buddies, if I had more time, I would 
+	calculate the top work buddies by time.
+*/
+
+const createGraph = (conversations) => {
 	const emailGraph = {};
 	for (let i = 0; i < conversations.conversations.length; i++) {
-		//keep track of time too which bucket
 		let conversation = conversations.conversations[i];
 		const {from, bcc, date, to} = conversation;
 
@@ -175,7 +191,6 @@ const createGraph = () => {
 	}
 	return emailGraph;
 };
-const emailGraph = createGraph();
 
 const calculateTopWorkBuddies = (emailGraph) => {
 	const pairs = {};
@@ -218,6 +233,6 @@ const calculateTopWorkBuddies = (emailGraph) => {
 	})
 	return topFivePairs;
 }
-const topWorkBuddies = calculateTopWorkBuddies(emailGraph);
-appData.topWorkBuddies = topWorkBuddies;
 
+appData.createDataStore = createDataStore;
+export {appData};

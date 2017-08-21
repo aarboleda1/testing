@@ -1,57 +1,72 @@
 import React, { Component } from 'react';
-import CompanyList from './components/CompanyList';
+import Dashboard from './components/Dashboard';
 import ButtonDropDown from './components/ButtonDropDown';
+import axios from 'axios';
+import { RingLoader } from 'react-spinners';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			currentMonth: props.data.appData.sortedCompaniesByMonth[5],		
-			selectedMonth: 5,	
-		}
-		this.monthMapper = {
-			5: props.data.appData.topFiveInLastFiveMonths,
-			6: props.data.appData.topFiveInLastSixMonths,
-			7: props.data.appData.topFiveInLastSevenMonths,
-			8: props.data.appData.topFiveInLastEightMonths,
-			9: props.data.appData.topFiveInLastNineMonths,
-			10: props.data.appData.topFiveInLastTenMonths,
-			11: props.data.appData.topFiveInLastElevenMonths,
-			12: props.data.appData.topFiveInLastTwelveMonths,
+			currentMonthData: null,
+			selectedMonth: null,
+			isLoading: true,
+			data: null,	
 		}
 	}
 	onSelectMonth = (lastNumberOfMonths) => {
 		this.setState({
-			currentMonth: this.props.data.appData.sortedCompaniesByMonth[lastNumberOfMonths],
+			currentMonthData: this.state.data.sortedCompaniesByMonth[lastNumberOfMonths],
 			selectedMonth: lastNumberOfMonths,
 		})
 	}
+
 	componentDidMount = () => {
+		const context = this;		
+		axios.get('http://localhost:8080/')
+			.then((res) => {
+				return this.props.data.createDataStore(res.data); 				
+			})
+			.then((data) => {
+				context.setState({
+					currentMonthData: data.sortedCompaniesByMonth[5],
+					selectedMonth: 5,
+					isLoading: false,
+					data: data,
+				})				
+			})
 	}
   render() {
-		const {data} = this.props;
-		const {currentMonth, selectedMonth}= this.state;
-    return (
-      <div className="app-container">
-				<div className="fa-sidebar-container"/>
-				<div className="fa-header">
-					<h4>Front Analytics Dashboard</h4>
+		const {currentMonthData, selectedMonth, isLoading, data}= this.state;
+		if (isLoading) {
+			return (
+				<RingLoader
+					color={'#123abc'} 
+					loading={isLoading} 
+				/>
+			)
+		} else {
+			return (			
+				<div className="app-container">
+					<div className="fa-sidebar-container"/>
+					<div className="fa-header">
+						<h4>Front Analytics Dashboard</h4>
+					</div>
+					<div className="fa-main-container">
+						<ButtonDropDown
+							onSelectMonth={this.onSelectMonth}
+							selectedMonth={selectedMonth}
+						/>
+						<Dashboard
+							lastNumberOfMonths={currentMonthData}
+							selectedMonth={selectedMonth}
+							totalConversationsPerMonth={data.totalConversationsPerMonth}
+							topWorkBuddies = {data.topWorkBuddies}
+						/>									
+					</div>
 				</div>
-				<div className="fa-main-container">
-					<ButtonDropDown
-						onSelectMonth={this.onSelectMonth}
-						selectedMonth={this.state.selectedMonth}
-					/>
-					<CompanyList
-						lastNumberOfMonths={currentMonth}
-						selectedMonth={selectedMonth}
-						totalConversationsPerMonth={data.appData.totalConversationsPerMonth}
-						topWorkBuddies = {data.appData.topWorkBuddies}
-					/>									
-				</div>
-
-      </div>
-    );
+			);
+		}
   }
 }
 
