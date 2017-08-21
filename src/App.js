@@ -27,7 +27,6 @@ class App extends Component {
 		})
 	}
 	componentDidMount = () => {
-		console.log(this.props)
 	}
   render() {
 		const {data} = this.props;
@@ -47,6 +46,7 @@ class App extends Component {
 						lastNumberOfMonths={currentMonth}
 						selectedMonth={selectedMonth}
 						totalConversationsPerMonth={data.appData.totalConversationsPerMonth}
+						topWorkBuddies = {data.appData.topWorkBuddies}
 					/>									
 				</div>
 

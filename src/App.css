@@ -1,4 +1,4 @@
-h4 {
+.fa-header>h4 {
     margin: 0;
     color: white;
 }
@@ -13,9 +13,13 @@ h4 {
     position: absolute;
     margin-left: 44px;
     padding: 10px;
-    border: 1px solid black;
     width: calc(100% - 44px);
     height: calc(100% - 40px);
+}
+
+.fa-name-container {
+    display: flex;
+    /* justify-content: space-between; */
 }
 
 .fa-tabs-container {
@@ -42,6 +46,10 @@ h4 {
 
 /*Components*/
 
+.fa-number {
+    margin-right: 10px;
+}
+
 
 /* .fa-top-5-container-list-container{} */
 
@@ -50,8 +58,8 @@ h4 {
 }
 
 .fa-monthly-data-container {
-    width: 30%;
-    margin: 0 10px;
+    width: auto;
+    margin-left: 10px;
 }
 
 .fa-dashboard-container {
@@ -62,14 +70,14 @@ h4 {
 
 .jumbotron {
     text-align: center;
-    width: 70%;
+    width: 55%;
 }
 
 .fa-top-5-container-list {
     display: flex;
     position: relative;
-    width: 70%;
-    justify-content: space-around;
+    width: 55%;
+    /* justify-content: space-around; */
     height: 100%;
     overflow: scroll;
 }

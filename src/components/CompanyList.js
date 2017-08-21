@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Table, ListGroup, ListGroupItem } from 'react-bootstrap';
 export default class CompanyList extends Component {
-	constructor(props) {
-		super(props);
-	}	
 	renderMostActiveUsers = (users, company) => {
 		let month = this.props.selectedMonth
 		let sortedUsers = Object.keys(users).sort((a, b) => {
@@ -45,6 +42,33 @@ export default class CompanyList extends Component {
 			})
 		)
 	}
+	renderTopFiveWorkBuddies = () => {
+		return this.props.topWorkBuddies.map((buddies, index) => {
+			let buddyOne = buddies[0];
+			let buddyTwo = buddies[1];
+			return (
+				<span className="fa-buddy-container"key={buddyOne.email}>
+				<span className="fa-name-container">
+							<span className="fa-number"><strong>{index + 1}</strong></span>
+							<span style={{marginRight: '10px'}}>
+								<strong>{buddyOne.name.first} {' '}
+									{buddyOne.name.last} <br/>
+								</strong>
+								{buddyOne.email}
+							</span>
+							<span>
+								<strong>
+									{buddyTwo.name.first} {' '}
+									{buddyTwo.name.last} <br/>						
+								</strong>
+								{buddyTwo.email}
+							</span>
+						</span>
+					<br/>
+				</span>
+			)
+		})
+	}
 	render() {
 		const {selectedMonth, totalConversationsPerMonth} = this.props;
 		return(
@@ -66,12 +90,11 @@ export default class CompanyList extends Component {
 					</div>
 					<div className="fa-monthly-data-container">
 						<ListGroup>
-							<ListGroupItem header="Heading 1">
-								<strong> Total Conversations this Month </strong>
+							<ListGroupItem header={`Total Conversations last ${selectedMonth} months`}>
 								<br/>{totalConversationsPerMonth[selectedMonth]}
 							</ListGroupItem>
-							<ListGroupItem header="Heading 3">
-								<strong>Top 5 pairs of work buddies</strong>
+							<ListGroupItem header="Top 5 pair of work buddies">
+									{this.renderTopFiveWorkBuddies()}
 							</ListGroupItem>
 						</ListGroup>
 					</div>
