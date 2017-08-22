@@ -41,7 +41,8 @@ The most difficult challenge was the data analysis and understanding. In my './u
         + ButtonDropDown - list view
         + Dashboard - list component
         + Tabs - screen view after clicking on list item  
-   + app.js - _main entry point into app_    
+   + App.js - _Main component in the app_
+   + index.js - _Entry point into the app_
     
 ## Todo
 - Write tests
