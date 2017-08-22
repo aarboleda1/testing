@@ -23,11 +23,11 @@ You are part of a frontend engineering team at Front tasked with building an ana
 Your data team has made available a JSON API endpoint that returns data as in conversations.json.
 
 ## Challenges
-The most difficult challenge was the data analysis and understanding. In my './utils.js' folders is where the data calculated is. Furthermore, before doing any calculations, I had to take some time to establish a 'conversation' and how to handle the one to many relationships in emails.
+The most difficult challenge was the data analysis and understanding. In my './utils.js' folders is where the data calculated is. Furthermore, before doing any calculations, I had to take some time to establish a 'conversation' and how to handle the one to many relationships in emails. See above to take a look at my assumptions.
 
 
 ## Features
-- Data sent through a Node Server
+- Data sent through a Express.js server
 
 ## Libraries used and why I chose them
 - **React** 
